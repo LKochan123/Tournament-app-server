@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lkochan.tournamentapp.entities.Player;
-import com.lkochan.tournamentapp.exception.PlayerNotFoundException;
-import com.lkochan.tournamentapp.exception.TournamentNotFoundException;
+import com.lkochan.tournamentapp.exception.EntityNotFoundException;
 import com.lkochan.tournamentapp.service.interfaces.PlayerService;
 
 import jakarta.validation.Valid;
@@ -35,25 +34,25 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayer(@PathVariable Long id) throws PlayerNotFoundException {
+    public ResponseEntity<Player> getPlayer(@PathVariable Long id) throws EntityNotFoundException {
         Player player = playerService.getPlayer(id);
         return new ResponseEntity<>(player, HttpStatus.OK);
     }
 
     @PostMapping("/{tournament_id}")
-    public ResponseEntity<HttpStatus> addPlayer(@RequestBody @Valid Player player, @PathVariable Long tournament_id) throws TournamentNotFoundException {
+    public ResponseEntity<HttpStatus> addPlayer(@RequestBody @Valid Player player, @PathVariable Long tournament_id) throws EntityNotFoundException {
         playerService.savePlayer(player, tournament_id);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HttpStatus> updatePlayer(@RequestBody @Valid Player player, @PathVariable Long id) throws PlayerNotFoundException {
+    public ResponseEntity<HttpStatus> updatePlayer(@RequestBody @Valid Player player, @PathVariable Long id) throws EntityNotFoundException {
         playerService.updatePlayer(id, player);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deletePlayer(@PathVariable Long id) throws PlayerNotFoundException {
+    public ResponseEntity<HttpStatus> deletePlayer(@PathVariable Long id) throws EntityNotFoundException {
         playerService.deletePlayer(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -48,6 +48,12 @@ public class Player {
     @Column(name = "losses")
     private int losses;
 
+    @Column(name = "scored_points")
+    private int scoredPoints;
+
+    @Column(name = "lost_points")
+    private int lostPoints;
+
     @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "tournament_id", referencedColumnName = "id")

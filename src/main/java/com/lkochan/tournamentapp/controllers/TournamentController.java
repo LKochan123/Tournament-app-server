@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lkochan.tournamentapp.entities.Tournament;
-import com.lkochan.tournamentapp.exception.TournamentNotFoundException;
+import com.lkochan.tournamentapp.exception.EntityNotFoundException;
 import com.lkochan.tournamentapp.service.interfaces.TournamentService;
 
 import jakarta.validation.Valid;
@@ -33,7 +33,7 @@ public class TournamentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tournament> getTournament(@PathVariable Long id) throws TournamentNotFoundException {
+    public ResponseEntity<Tournament> getTournament(@PathVariable Long id) throws EntityNotFoundException {
         Tournament tournament = tournamentService.getTournament(id);
         return new ResponseEntity<>(tournament, HttpStatus.OK);
     }
@@ -45,7 +45,7 @@ public class TournamentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delteTournament(@PathVariable Long id) throws TournamentNotFoundException {
+    public ResponseEntity<String> delteTournament(@PathVariable Long id) throws EntityNotFoundException {
         tournamentService.deleteTournament(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
