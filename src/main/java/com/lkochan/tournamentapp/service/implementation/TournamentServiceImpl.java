@@ -7,12 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lkochan.tournamentapp.entities.Tournament;
-import com.lkochan.tournamentapp.exception.TournamentNotFoundException;
+import com.lkochan.tournamentapp.exception.EntityNotFoundException;
+import com.lkochan.tournamentapp.exception.EntityUtils;
 import com.lkochan.tournamentapp.repository.TournamentRepository;
 import com.lkochan.tournamentapp.service.interfaces.TournamentService;
 
 @Service
 public class TournamentServiceImpl implements TournamentService {
+
+    private static final String message = "tournament";
 
     @Autowired
     TournamentRepository tournamentRepository;
@@ -25,7 +28,7 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     public Tournament getTournament(Long id) {
         Optional<Tournament> tournament = tournamentRepository.findById(id);
-        return unwrapTournament(tournament, id);
+        return EntityUtils.unwrapEntity(tournament, id, message);
     }
 
     @Override
@@ -39,7 +42,7 @@ public class TournamentServiceImpl implements TournamentService {
         if (tournament.isPresent()) {
             tournamentRepository.deleteById(id);
         } else {
-            throw new TournamentNotFoundException(id);
+            throw new EntityNotFoundException(message, id);
         }
     }
 
@@ -48,10 +51,5 @@ public class TournamentServiceImpl implements TournamentService {
     //     // TODO Auto-generated method stub
     //     throw new UnsupportedOperationException("Unimplemented method 'updateTournament'");
     // }
-
-    static Tournament unwrapTournament(Optional<Tournament> entity, Long id) {
-        if (entity.isPresent()) return entity.get();
-        else throw new TournamentNotFoundException(id);
-    }
     
 }

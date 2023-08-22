@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.lkochan.tournamentapp.exception.PlayerNotFoundException;
-import com.lkochan.tournamentapp.exception.TournamentNotFoundException;
+import com.lkochan.tournamentapp.exception.EntityNotFoundException;
 
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
@@ -26,11 +25,10 @@ public class ApplicationExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({
-        TournamentNotFoundException.class,
-        PlayerNotFoundException.class
+    @ExceptionHandler({ 
+        EntityNotFoundException.class 
     })
-    public Map<String, String> handleBusinessException(TournamentNotFoundException ex) {
+    public Map<String, String> handleBusinessException(EntityNotFoundException ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("message", ex.getMessage());
         return errorMap;

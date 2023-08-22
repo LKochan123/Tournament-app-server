@@ -5,9 +5,9 @@ import java.util.List;
 import com.lkochan.tournamentapp.entities.Player;
 
 public interface PlayerService {
-    List<Player> getPlayers(Long tournament_id);
+    List<Player> getPlayers(Long tournamentId);
     Player getPlayer(Long id);
-    void savePlayer(Player player, Long tournament_id);
+    void savePlayer(Player player, Long tournamentId);
     void updatePlayer(Long id, Player player);
     void deletePlayer(Long id);
 }
