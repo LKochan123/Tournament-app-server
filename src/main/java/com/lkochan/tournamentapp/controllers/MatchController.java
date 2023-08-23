@@ -27,13 +27,13 @@ public class MatchController {
     MatchService matchService;
 
     @GetMapping("/player/{playerId}")
-    public ResponseEntity<List<Match>> getPlayerMatches(@PathVariable Long playerId) {
+    public ResponseEntity<List<Match>> getPlayerMatches(@PathVariable Long playerId) throws EntityNotFoundException {
         List<Match> matches = matchService.getAllPlayersMatches(playerId);
         return new ResponseEntity<>(matches, HttpStatus.OK);
     }
 
     @GetMapping("/tournament/{tournamentId}")
-        public ResponseEntity<List<Match>> getTournamentMatches(@PathVariable Long tournamentId) {
+        public ResponseEntity<List<Match>> getTournamentMatches(@PathVariable Long tournamentId) throws EntityNotFoundException {
         List<Match> matches = matchService.getAllTournamentMatches(tournamentId);
         return new ResponseEntity<>(matches, HttpStatus.OK);
     }
@@ -45,7 +45,7 @@ public class MatchController {
     }
 
     @PostMapping("/add/{tournamentId}/{playerOneId}/{playerTwoId}")
-    public ResponseEntity<HttpStatus> createMatch(@RequestBody @Valid Match match, @PathVariable Long tournamentId, @PathVariable Long playerOneId, @PathVariable Long playerTwoId) {
+    public ResponseEntity<HttpStatus> createMatch(@RequestBody @Valid Match match, @PathVariable Long tournamentId, @PathVariable Long playerOneId, @PathVariable Long playerTwoId) throws EntityNotFoundException {
         matchService.saveMatch(match, tournamentId, playerOneId, playerTwoId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

@@ -29,12 +29,14 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> getAllPlayersMatches(Long playerId) {
-        return matchRepository.findByPlayerId(playerId);
+        Optional<List<Match>> matches = matchRepository.findByPlayerId(playerId);
+        return EntityUtils.unwrapEntity(matches, playerId, "player");
     }
 
     @Override
     public List<Match> getAllTournamentMatches(Long tournamentId) {
-        return matchRepository.findByTournamentId(tournamentId);
+        Optional<List<Match>> matches = matchRepository.findByTournamentId(tournamentId);
+        return EntityUtils.unwrapEntity(matches, tournamentId, "tournament");
     }
 
     // @Override
@@ -59,9 +61,12 @@ public class MatchServiceImpl implements MatchService {
             match.setTournament(tournament.get());
             match.setPlayerOne(playerOne.get());
             match.setPlayerTwo(playerTwo.get());
+
+            updatePlayerDetails(playerOne.get(), match, "playerOne");
+            updatePlayerDetails(playerTwo.get(), match, "playerTwo");
+
             matchRepository.save(match);
         } else {
-            // TO DO! (change error name properly)
             throw new EntityNotFoundException("tournament", tournamentId);
         }
     }
@@ -81,5 +86,39 @@ public class MatchServiceImpl implements MatchService {
             throw new EntityNotFoundException(message, id);
         }
     }
-    
+
+    private void updatePlayerDetails(Player player, Match match, String playerType) {
+        int actualScoredPoints = player.getScoredPoints();
+        int actualLostPoints = player.getLostPoints();
+
+        int playerOneScore = match.getPlayerOneScore();
+        int playerTwoScore = match.getPlayerTwoScore();
+
+        switch (playerType) {
+            case "playerOne" -> {
+                player.setScoredPoints(actualScoredPoints + playerOneScore);
+                player.setLostPoints(actualLostPoints + playerTwoScore);
+            } case "playerTwo" -> {
+                player.setScoredPoints(actualScoredPoints + playerTwoScore);
+                player.setLostPoints(actualLostPoints + playerOneScore);
+            } default -> {
+                throw new IllegalArgumentException("Invalid player type: " + playerType);
+            }
+        }
+
+        updatePlayerMatches(player, playerOneScore, playerTwoScore, playerType);
+        playerRepository.save(player);
+    }
+
+    private void updatePlayerMatches(Player player, int pOneScore, int pTwoScore, String playerType) {
+        player.setPlayedMatches(player.getPlayedMatches() + 1);
+        if (pOneScore == pTwoScore) {
+            player.setDraws(player.getDraws() + 1);
+        } else {
+            boolean playerWins = (pOneScore > pTwoScore && playerType.equals("playerOne")) ||
+                (pTwoScore > pOneScore && playerType.equals("playerTwo"));
+            if (playerWins) player.setWins(player.getWins() + 1);
+            else player.setLosses(player.getLosses() + 1);
+        }
+    }
 }

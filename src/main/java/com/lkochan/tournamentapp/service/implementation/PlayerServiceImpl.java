@@ -19,13 +19,14 @@ import lombok.AllArgsConstructor;
 @Service
 public class PlayerServiceImpl implements PlayerService {
 
-    private static final String message = "player";
     PlayerRepository playerRepository;
     TournamentRepository tournamentRepository;
+    private static final String message = "player";
 
     @Override
-    public List<Player> getPlayers(Long tournament_id) {
-        return playerRepository.findByTournamentId(tournament_id);
+    public List<Player> getPlayers(Long tournamentId) {
+        Optional<List<Player>> players = playerRepository.findByTournamentId(tournamentId);
+        return EntityUtils.unwrapEntity(players, tournamentId, "tournament");
     }
 
     @Override
@@ -35,13 +36,13 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void savePlayer(Player player, Long tournament_id) {
-        Optional<Tournament> tournament = tournamentRepository.findById(tournament_id);
+    public void savePlayer(Player player, Long tournamentId) {
+        Optional<Tournament> tournament = tournamentRepository.findById(tournamentId);
         if (tournament.isPresent()) {
             player.setTournament(tournament.get());
             playerRepository.save(player);
         } else {
-            throw new EntityNotFoundException("tournament", tournament_id);
+            throw new EntityNotFoundException("tournament", tournamentId);
         }
     }
 

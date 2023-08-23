@@ -45,11 +45,4 @@ public class TournamentServiceImpl implements TournamentService {
             throw new EntityNotFoundException(message, id);
         }
     }
-
-    // @Override
-    // public void updateTournament(Long id) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'updateTournament'");
-    // }
-    
 }

@@ -27,9 +27,9 @@ public class PlayerController {
     @Autowired
     PlayerService playerService;
 
-    @GetMapping("/all/{tournament_id}")
-    public ResponseEntity<List<Player>> getPlayerse(@PathVariable Long tournament_id) {
-        List<Player> players = playerService.getPlayers(tournament_id);
+    @GetMapping("/all/{tournamentId}")
+    public ResponseEntity<List<Player>> getPlayers(@PathVariable Long tournamentId) throws EntityNotFoundException {
+        List<Player> players = playerService.getPlayers(tournamentId);
         return new ResponseEntity<>(players, HttpStatus.OK);
     }
 
@@ -39,9 +39,10 @@ public class PlayerController {
         return new ResponseEntity<>(player, HttpStatus.OK);
     }
 
-    @PostMapping("/{tournament_id}")
-    public ResponseEntity<HttpStatus> addPlayer(@RequestBody @Valid Player player, @PathVariable Long tournament_id) throws EntityNotFoundException {
-        playerService.savePlayer(player, tournament_id);
+    @PostMapping("/{tournamentId}")
+    public ResponseEntity<HttpStatus> addPlayer(@RequestBody @Valid Player player, @PathVariable Long tournamentId) 
+    throws EntityNotFoundException {
+        playerService.savePlayer(player, tournamentId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
