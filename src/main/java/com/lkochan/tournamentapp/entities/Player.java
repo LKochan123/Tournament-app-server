@@ -1,5 +1,7 @@
 package com.lkochan.tournamentapp.entities;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
@@ -33,7 +35,7 @@ public class Player {
 
     @Min(value = 0, message = "Played matches must be positive number.")
     @Column(name = "played_matches")
-    private int playedMatches;
+    private int playedMatches = 3;
 
     @Min(value = 0, message = "Wins must be positive number.")
     @Column(name = "wins")
@@ -59,5 +61,13 @@ public class Player {
     @ManyToOne(optional = false)
     @JoinColumn(name = "tournament_id", referencedColumnName = "id")
     private Tournament tournament;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "playerOne", cascade = CascadeType.ALL)
+    private List<Match> matchesAsPlayerOne;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "playerTwo", cascade = CascadeType.ALL)
+    private List<Match> matchesAsPlayerTwo;
 
 }

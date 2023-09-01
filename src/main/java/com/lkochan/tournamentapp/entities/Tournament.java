@@ -33,7 +33,6 @@ public class Tournament {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @NonNull
     @Min(value = 2, message = "Bracket size minimum value is 2")
     @Max(value = 16, message = "Bracket size maximum value is 16")
     @Column(name = "bracket_size")

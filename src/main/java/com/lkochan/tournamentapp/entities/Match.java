@@ -21,21 +21,8 @@ public class Match {
     @Column(name = "id")
     private Long id;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "tournament_id", referencedColumnName = "id")
-    private Tournament tournament;
-
     @Column(name = "round_number")
     private int roundNumber;
-
-    @ManyToOne
-    @JoinColumn(name = "player_one_id", referencedColumnName = "id")
-    private Player playerOne;
-
-    @ManyToOne
-    @JoinColumn(name = "player_two_id", referencedColumnName = "id")
-    private Player playerTwo;
 
     @Min(value = 0, message = "Player score can't be negative")
     @Column(name = "p_one_score")
@@ -44,5 +31,18 @@ public class Match {
     @Min(value = 0, message = "Player score can't be negative")
     @Column(name = "p_two_score")
     private int playerTwoScore;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "tournament_id", referencedColumnName = "id")
+    private Tournament tournament;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "player_one_id", referencedColumnName = "id")
+    private Player playerOne;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "player_two_id", referencedColumnName = "id")
+    private Player playerTwo;
 
 }

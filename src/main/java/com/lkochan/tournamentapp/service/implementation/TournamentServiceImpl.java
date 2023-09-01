@@ -15,8 +15,6 @@ import com.lkochan.tournamentapp.service.interfaces.TournamentService;
 @Service
 public class TournamentServiceImpl implements TournamentService {
 
-    private static final String message = "tournament";
-
     @Autowired
     TournamentRepository tournamentRepository;
 
@@ -28,7 +26,7 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     public Tournament getTournament(Long id) {
         Optional<Tournament> tournament = tournamentRepository.findById(id);
-        return EntityUtils.unwrapEntity(tournament, id, message);
+        return EntityUtils.unwrapEntity(tournament, id, "tournament");
     }
 
     @Override
@@ -42,7 +40,7 @@ public class TournamentServiceImpl implements TournamentService {
         if (tournament.isPresent()) {
             tournamentRepository.deleteById(id);
         } else {
-            throw new EntityNotFoundException(message, id);
+            throw new EntityNotFoundException("tournament", id);
         }
     }
 }
