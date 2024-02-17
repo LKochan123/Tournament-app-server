@@ -35,27 +35,27 @@ public class Player {
 
     @Min(value = 0, message = "Played matches must be positive number.")
     @Column(name = "played_matches")
-    private int playedMatches = 3;
+    private int playedMatches = 0;
 
     @Min(value = 0, message = "Wins must be positive number.")
     @Column(name = "wins")
-    private int wins;
+    private int wins = 0;
 
     @Min(value = 0, message = "Draws must be positive number.")
     @Column(name = "draws")
-    private int draws;
+    private int draws = 0;
 
     @Min(value = 0, message = "Losses must be positive number.")
     @Column(name = "losses")
-    private int losses;
+    private int losses = 0;
 
     @Min(value = 0, message = "Scored points must be positive number.")
     @Column(name = "scored_points")
-    private int scoredPoints;
+    private int scoredPoints = 0;
 
     @Min(value = 0, message = "Lost points must be positive number.")
     @Column(name = "lost_points")
-    private int lostPoints;
+    private int lostPoints = 0;
 
     @JsonIgnore
     @ManyToOne(optional = false)

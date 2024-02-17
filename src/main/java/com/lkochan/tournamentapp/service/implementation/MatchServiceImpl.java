@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import com.lkochan.tournamentapp.entities.Match;
 import com.lkochan.tournamentapp.entities.Player;
 import com.lkochan.tournamentapp.entities.Tournament;
+import com.lkochan.tournamentapp.enums.PlayerPosition;
 import com.lkochan.tournamentapp.exception.EntityNotFoundException;
 import com.lkochan.tournamentapp.exception.EntityUtils;
+import com.lkochan.tournamentapp.exception.MatchNotFoundException;
 import com.lkochan.tournamentapp.repository.MatchRepository;
 import com.lkochan.tournamentapp.repository.PlayerRepository;
 import com.lkochan.tournamentapp.repository.TournamentRepository;
@@ -37,12 +39,6 @@ public class MatchServiceImpl implements MatchService {
         return EntityUtils.unwrapEntity(matches, tournamentId, "tournament");
     }
 
-    // @Override
-    // public List<Match> getAllMatchesInRound(Long tournamentId, int roundNumber) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getAllMatchesInRound'");
-    // }
-
     @Override
     public Match getMatch(Long id) {
         Optional<Match> match = matchRepository.findById(id);
@@ -61,11 +57,11 @@ public class MatchServiceImpl implements MatchService {
             match.setPlayerOne(playerOne.get());
             match.setPlayerTwo(playerTwo.get());
 
-            updatePlayerDetails(playerOne.get(), match, "playerOne", isAddingMatch);
-            updatePlayerDetails(playerTwo.get(), match, "playerTwo", isAddingMatch);
+            updatePlayerDetails(playerOne.get(), match, new UpdateDetails(PlayerPosition.PLAYER_ONE, isAddingMatch));
+            updatePlayerDetails(playerTwo.get(), match, new UpdateDetails(PlayerPosition.PLAYER_TWO, isAddingMatch));
             matchRepository.save(match);
         } else {
-            throw new EntityNotFoundException("tournament", tournamentId);
+            throw new MatchNotFoundException(tournamentId, playerOneId, playerTwoId);
         }
     }
 
@@ -79,57 +75,67 @@ public class MatchServiceImpl implements MatchService {
     public void deleteMatch(Long id) {
         boolean isAddingMatch = false;
         Optional<Match> matchOptional = matchRepository.findById(id);
-        
+
         if (matchOptional.isPresent()) {
             Match match = matchOptional.get();
             Player playerOne = match.getPlayerOne();
             Player playerTwo = match.getPlayerTwo();
 
-            updatePlayerDetails(playerOne, match, "playerOne", isAddingMatch);
-            updatePlayerDetails(playerTwo, match, "playerTwo", isAddingMatch);
+            updatePlayerDetails(playerOne, match, new UpdateDetails(PlayerPosition.PLAYER_ONE, isAddingMatch));
+            updatePlayerDetails(playerTwo, match, new UpdateDetails(PlayerPosition.PLAYER_TWO, isAddingMatch));
             matchRepository.deleteById(id);
         } else {
             throw new EntityNotFoundException("match", id);
         }
     }
 
-    private void updatePlayerDetails(Player player, Match match, String playerType, boolean isAddingMatch) {
+    private void updatePlayerDetails(Player player, Match match, UpdateDetails details) {
         int actualScoredPoints = player.getScoredPoints();
         int actualLostPoints = player.getLostPoints();
 
         int playerOneScore = match.getPlayerOneScore();
         int playerTwoScore = match.getPlayerTwoScore();
 
-        int playerOneValue = isAddingMatch ? playerOneScore : -playerOneScore;
-        int playerTwoValue = isAddingMatch ? playerTwoScore : -playerTwoScore;
+        int playerOneValue = details.isAddingMatch ? playerOneScore : -playerOneScore;
+        int playerTwoValue = details.isAddingMatch ? playerTwoScore : -playerTwoScore;
 
-        switch (playerType) {
-            case "playerOne" -> {
+        MatchResult matchResult = new MatchResult(playerOneScore, playerTwoScore);
+
+        switch (details.playerPosition) {
+            case PLAYER_ONE -> {
                 player.setScoredPoints(actualScoredPoints + playerOneValue);
                 player.setLostPoints(actualLostPoints + playerTwoValue);
-            } case "playerTwo" -> {
+            } case PLAYER_TWO -> {
                 player.setScoredPoints(actualScoredPoints + playerTwoValue);
                 player.setLostPoints(actualLostPoints + playerOneValue);
             } default -> {
-                throw new IllegalArgumentException("Invalid player type: " + playerType);
+                throw new IllegalArgumentException("Invalid player type: " + details.playerPosition);
             }
         }
 
-        updatePlayerMatches(player, playerOneScore, playerTwoScore, playerType, isAddingMatch);
+        updatePlayerMatches(player, matchResult, details);
         playerRepository.save(player);
     }
 
-    private void updatePlayerMatches(Player player, int pOneScore, int pTwoScore, String playerType, 
-    boolean isAddingMatch) {
-        int value = isAddingMatch ? 1 : -1;
+    private void updatePlayerMatches(Player player, MatchResult matchResult, UpdateDetails details) {
+        PlayerPosition playerPosition = details.playerPosition;
+        int playerOneScore = matchResult.playerOneScore;
+        int playerTwoScore = matchResult.playerTwoScore;
+        int value = details.isAddingMatch ? 1 : -1;
+
         player.setPlayedMatches(player.getPlayedMatches() + value);
-        if (pOneScore == pTwoScore) {
+        
+        if (playerOneScore == playerTwoScore) {
             player.setDraws(player.getDraws() + value);
         } else {
-            boolean playerWins = (pOneScore > pTwoScore && playerType.equals("playerOne")) ||
-                (pTwoScore > pOneScore && playerType.equals("playerTwo"));
-            if (playerWins) player.setWins(player.getWins() + value);
+            boolean playerOneWins = playerOneScore > playerTwoScore && PlayerPosition.PLAYER_ONE == playerPosition;
+            boolean playerTwoWins = playerTwoScore > playerOneScore && PlayerPosition.PLAYER_TWO == playerPosition;
+            
+            if (playerOneWins || playerTwoWins) player.setWins(player.getWins() + value);
             else player.setLosses(player.getLosses() + value);
         }
     }
+
+    record MatchResult(int playerOneScore, int playerTwoScore) {}
+    record UpdateDetails(PlayerPosition playerPosition, boolean isAddingMatch) {}
 }

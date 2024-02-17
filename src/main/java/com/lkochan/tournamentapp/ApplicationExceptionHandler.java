@@ -25,9 +25,7 @@ public class ApplicationExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({ 
-        EntityNotFoundException.class 
-    })
+    @ExceptionHandler({ EntityNotFoundException.class })
     public Map<String, String> handleBusinessException(EntityNotFoundException ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("message", ex.getMessage());
