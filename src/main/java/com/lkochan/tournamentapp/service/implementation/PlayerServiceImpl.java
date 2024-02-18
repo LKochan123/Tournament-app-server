@@ -46,14 +46,11 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void updatePlayer(Long id, Player player) {
-        Player p = EntityUtils.unwrapEntity(playerRepository.findById(id), id, "player");
-        p.setLosses(player.getLosses());
-        p.setPlayedMatches(player.getPlayedMatches());
-        p.setSeeding(player.getSeeding());
-        p.setUsername(player.getUsername());
-        p.setWins(player.getWins());
-        playerRepository.save(p);
+    public void updatePlayer(Long id, Player playerDetails) {
+        Player player = EntityUtils.unwrapEntity(playerRepository.findById(id), id, "player");
+        player.setSeeding(playerDetails.getSeeding());
+        player.setUsername(playerDetails.getUsername());
+        playerRepository.save(player);
     }
 
     @Override

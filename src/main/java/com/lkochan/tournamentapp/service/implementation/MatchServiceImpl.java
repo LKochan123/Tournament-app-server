@@ -57,18 +57,12 @@ public class MatchServiceImpl implements MatchService {
             match.setPlayerOne(playerOne.get());
             match.setPlayerTwo(playerTwo.get());
 
-            updatePlayerDetails(playerOne.get(), match, new UpdateDetails(PlayerPosition.PLAYER_ONE, isAddingMatch));
-            updatePlayerDetails(playerTwo.get(), match, new UpdateDetails(PlayerPosition.PLAYER_TWO, isAddingMatch));
+            updatePlayerStats(playerOne.get(), match, new UpdateDetails(PlayerPosition.PLAYER_ONE, isAddingMatch));
+            updatePlayerStats(playerTwo.get(), match, new UpdateDetails(PlayerPosition.PLAYER_TWO, isAddingMatch));
             matchRepository.save(match);
         } else {
             throw new MatchNotFoundException(tournamentId, playerOneId, playerTwoId);
         }
-    }
-
-    @Override
-    public void updateMatch(Match match, Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateMatch'");
     }
 
     @Override
@@ -81,25 +75,52 @@ public class MatchServiceImpl implements MatchService {
             Player playerOne = match.getPlayerOne();
             Player playerTwo = match.getPlayerTwo();
 
-            updatePlayerDetails(playerOne, match, new UpdateDetails(PlayerPosition.PLAYER_ONE, isAddingMatch));
-            updatePlayerDetails(playerTwo, match, new UpdateDetails(PlayerPosition.PLAYER_TWO, isAddingMatch));
+            updatePlayerStats(playerOne, match, new UpdateDetails(PlayerPosition.PLAYER_ONE, isAddingMatch));
+            updatePlayerStats(playerTwo, match, new UpdateDetails(PlayerPosition.PLAYER_TWO, isAddingMatch));
             matchRepository.deleteById(id);
         } else {
             throw new EntityNotFoundException("match", id);
         }
     }
 
-    private void updatePlayerDetails(Player player, Match match, UpdateDetails details) {
+    @Override
+    public void updateMatch(Match matchDetails, Long id) {
+        Optional<Match> matchOptional = matchRepository.findById(id);
+
+        if (matchOptional.isPresent()) {
+            Match match = matchOptional.get();
+
+            int playerOneLastScore = match.getPlayerOneScore();
+            int playerTwoLastScore = match.getPlayerTwoScore();
+            int playerOneCurrScore = matchDetails.getPlayerOneScore();
+            int playerTwoCurrScore = matchDetails.getPlayerTwoScore();
+            Player playerOne = match.getPlayerOne();
+            Player playerTwo = match.getPlayerTwo();
+
+            if (isResultChanged(playerOneLastScore, playerTwoLastScore, playerOneCurrScore, playerTwoCurrScore)) {
+                updatePlayerStats(playerOne, match, new UpdateDetails(PlayerPosition.PLAYER_ONE, false));
+                updatePlayerStats(playerTwo, match, new UpdateDetails(PlayerPosition.PLAYER_TWO, false));
+                updatePlayerStats(playerOne, matchDetails, new UpdateDetails(PlayerPosition.PLAYER_ONE, true));
+                updatePlayerStats(playerTwo, matchDetails, new UpdateDetails(PlayerPosition.PLAYER_TWO, true));
+
+                match.setPlayerOneScore(playerOneCurrScore);
+                match.setPlayerTwoScore(playerTwoCurrScore);
+            }
+            matchRepository.save(match);
+        } else {
+            throw new EntityNotFoundException("match", id);
+        }
+    }
+
+    private void updatePlayerPoints(Player player, Match match, UpdateDetails details) {
         int actualScoredPoints = player.getScoredPoints();
         int actualLostPoints = player.getLostPoints();
 
         int playerOneScore = match.getPlayerOneScore();
         int playerTwoScore = match.getPlayerTwoScore();
 
-        int playerOneValue = details.isAddingMatch ? playerOneScore : -playerOneScore;
-        int playerTwoValue = details.isAddingMatch ? playerTwoScore : -playerTwoScore;
-
-        MatchResult matchResult = new MatchResult(playerOneScore, playerTwoScore);
+        int playerOneValue = details.isAddingMatch ? playerOneScore : -1 * playerOneScore;
+        int playerTwoValue = details.isAddingMatch ? playerTwoScore : -1 * playerTwoScore;
 
         switch (details.playerPosition) {
             case PLAYER_ONE -> {
@@ -112,9 +133,6 @@ public class MatchServiceImpl implements MatchService {
                 throw new IllegalArgumentException("Invalid player type: " + details.playerPosition);
             }
         }
-
-        updatePlayerMatches(player, matchResult, details);
-        playerRepository.save(player);
     }
 
     private void updatePlayerMatches(Player player, MatchResult matchResult, UpdateDetails details) {
@@ -134,6 +152,18 @@ public class MatchServiceImpl implements MatchService {
             if (playerOneWins || playerTwoWins) player.setWins(player.getWins() + value);
             else player.setLosses(player.getLosses() + value);
         }
+    }
+
+    private void updatePlayerStats(Player player, Match match, UpdateDetails details) {
+        MatchResult matchResult = new MatchResult(match.getPlayerOneScore(), match.getPlayerTwoScore());
+        updatePlayerPoints(player, match, details);
+        updatePlayerMatches(player, matchResult, details);
+        playerRepository.save(player);
+    }
+
+    private boolean isResultChanged(int pOneLastScore, int pTwoLastScore, int pOneCurrScore, int pTwoCurrScore) {
+        if ((pOneLastScore != pOneCurrScore) || (pTwoLastScore != pTwoCurrScore)) return true;
+        else return false;
     }
 
     record MatchResult(int playerOneScore, int playerTwoScore) {}

@@ -3,6 +3,7 @@ package com.lkochan.tournamentapp.service.implementation;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,13 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     public Tournament saveTournament(Tournament tournament) {
         return tournamentRepository.save(tournament);
+    }
+
+    @Override
+    public void updateTournament(Long id, Tournament tournamentDetails) {
+        Tournament tournament = EntityUtils.unwrapEntity(tournamentRepository.findById(id), id, "tournament");
+        BeanUtils.copyProperties(tournamentDetails, tournament, "id");
+        tournamentRepository.save(tournament);
     }
 
     @Override

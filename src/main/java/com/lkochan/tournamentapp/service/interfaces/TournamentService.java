@@ -9,5 +9,5 @@ public interface TournamentService {
     Tournament getTournament(Long id);
     Tournament saveTournament(Tournament tournament);
     void deleteTournament(Long id);
-    // void updateTournament(Long id);
+    void updateTournament(Long id, Tournament tournament);
 }

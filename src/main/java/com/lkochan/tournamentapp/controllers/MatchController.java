@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +49,12 @@ public class MatchController {
     public ResponseEntity<HttpStatus> createMatch(@RequestBody @Valid Match match, @PathVariable Long tournamentId, @PathVariable Long playerOneId, @PathVariable Long playerTwoId) throws EntityNotFoundException {
         matchService.saveMatch(match, tournamentId, playerOneId, playerTwoId);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<HttpStatus> updateMatch(@RequestBody @Valid Match match, @PathVariable Long id) throws EntityNotFoundException {
+        matchService.updateMatch(match, id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
