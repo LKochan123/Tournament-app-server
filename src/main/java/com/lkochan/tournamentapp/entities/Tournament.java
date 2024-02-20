@@ -15,6 +15,12 @@ import lombok.*;
 @Getter
 @Setter
 public class Tournament {
+
+    public Tournament(@NonNull String type, @NonNull String status, int bracketSize) {
+        this.type = type;
+        this.status = status;
+        this.bracketSize = bracketSize;
+    }
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +39,7 @@ public class Tournament {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @Min(value = 4, message = "Bracket size minimum value is 2")
+    @Min(value = 4, message = "Bracket size minimum value is 4")
     @Max(value = 16, message = "Bracket size maximum value is 16")
     @Column(name = "bracket_size")
     private int bracketSize;

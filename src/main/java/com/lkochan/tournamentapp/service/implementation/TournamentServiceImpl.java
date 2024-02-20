@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lkochan.tournamentapp.entities.Tournament;
@@ -13,10 +12,12 @@ import com.lkochan.tournamentapp.exception.EntityUtils;
 import com.lkochan.tournamentapp.repository.TournamentRepository;
 import com.lkochan.tournamentapp.service.interfaces.TournamentService;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class TournamentServiceImpl implements TournamentService {
 
-    @Autowired
     TournamentRepository tournamentRepository;
 
     @Override

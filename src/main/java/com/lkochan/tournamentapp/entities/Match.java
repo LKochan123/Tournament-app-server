@@ -16,6 +16,13 @@ import lombok.*;
 @Setter
 public class Match {
 
+    public Match(Player playerOne, int playerOneScore, Player playerTwo, int playerTwoScore) {
+        this.playerOne = playerOne;
+        this.playerOneScore = playerOneScore;
+        this.playerTwo = playerTwo;
+        this.playerTwoScore = playerTwoScore;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

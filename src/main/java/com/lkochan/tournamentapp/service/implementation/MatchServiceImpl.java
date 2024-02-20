@@ -112,7 +112,7 @@ public class MatchServiceImpl implements MatchService {
         }
     }
 
-    private void updatePlayerPoints(Player player, Match match, UpdateDetails details) {
+    public void updatePlayerPoints(Player player, Match match, UpdateDetails details) {
         int actualScoredPoints = player.getScoredPoints();
         int actualLostPoints = player.getLostPoints();
 
@@ -135,7 +135,7 @@ public class MatchServiceImpl implements MatchService {
         }
     }
 
-    private void updatePlayerMatches(Player player, MatchResult matchResult, UpdateDetails details) {
+    public void updatePlayerMatches(Player player, MatchResult matchResult, UpdateDetails details) {
         PlayerPosition playerPosition = details.playerPosition;
         int playerOneScore = matchResult.playerOneScore;
         int playerTwoScore = matchResult.playerTwoScore;
@@ -166,6 +166,6 @@ public class MatchServiceImpl implements MatchService {
         else return false;
     }
 
-    record MatchResult(int playerOneScore, int playerTwoScore) {}
-    record UpdateDetails(PlayerPosition playerPosition, boolean isAddingMatch) {}
+    public record MatchResult(int playerOneScore, int playerTwoScore) {}
+    public record UpdateDetails(PlayerPosition playerPosition, boolean isAddingMatch) {}
 }

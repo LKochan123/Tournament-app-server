@@ -9,14 +9,26 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
-@Table(name = "player", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"tournament_id"})
-})
+// @Table(name = "player", uniqueConstraints = {
+//     @UniqueConstraint(columnNames = {"tournament_id"})
+// })
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class Player {
+
+    public Player(String username, int seeding, int matches, int wins, int draws, int losses, int scoredPoints, int lostPoints, Tournament tournament) {
+        this.username = username;
+        this.seeding = seeding;
+        this.playedMatches = matches;
+        this.wins = wins;
+        this.draws = draws;
+        this.losses = losses;
+        this.scoredPoints = scoredPoints;
+        this.lostPoints = lostPoints;
+        this.tournament = tournament;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
