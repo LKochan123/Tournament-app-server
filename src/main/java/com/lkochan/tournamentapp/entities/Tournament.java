@@ -16,6 +16,11 @@ import lombok.*;
 @Setter
 public class Tournament {
 
+    public Tournament(Long id, String type, String status, int bracketSize) {
+        this(type, status, bracketSize);
+        this.id = id;
+    }
+
     public Tournament(@NonNull String type, @NonNull String status, int bracketSize) {
         this.type = type;
         this.status = status;

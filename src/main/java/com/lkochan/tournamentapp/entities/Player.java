@@ -18,7 +18,17 @@ import lombok.*;
 @Setter
 public class Player {
 
-    public Player(String username, int seeding, int matches, int wins, int draws, int losses, int scoredPoints, int lostPoints, Tournament tournament) {
+    public Player(
+        Long id, String username, int seeding, int matches, int wins, int draws, int losses, int scoredPoints, 
+        int lostPoints, Tournament tournament
+        ) {
+        this(username, seeding, matches, wins, draws, losses, scoredPoints, lostPoints, tournament);
+        this.id = id;
+    }
+
+    public Player(
+        String username, int seeding, int matches, int wins, int draws, int losses, int scoredPoints, int lostPoints, Tournament tournament
+        ) {
         this.username = username;
         this.seeding = seeding;
         this.playedMatches = matches;

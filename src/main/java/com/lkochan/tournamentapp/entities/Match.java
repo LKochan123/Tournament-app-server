@@ -16,6 +16,11 @@ import lombok.*;
 @Setter
 public class Match {
 
+    public Match(Long id, Player playerOne, int playerOneScore, Player playerTwo, int playerTwoScore) {
+        this(playerOne, playerOneScore, playerTwo, playerTwoScore);
+        this.id = id;
+    }
+
     public Match(Player playerOne, int playerOneScore, Player playerTwo, int playerTwoScore) {
         this.playerOne = playerOne;
         this.playerOneScore = playerOneScore;
