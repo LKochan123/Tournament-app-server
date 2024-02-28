@@ -41,6 +41,12 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @GetMapping("/{username}")
+    public ResponseEntity<User> getUser(@PathVariable String username) throws EntityNotFoundException {
+        User user = userService.getUser(username);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<HttpStatus> saveUser(@RequestBody @Valid User user) {
         userService.saveUser(user);

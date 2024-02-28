@@ -34,6 +34,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUser(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        return EntityUtils.unwrapEntity(user, user.get().getId(), "user");
+    }
+
+    @Override
     public void saveUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -53,7 +59,7 @@ public class UserServiceImpl implements UserService {
     public void updateUserCredentials(Long id, User userDetails) {
         User user = EntityUtils.unwrapEntity(userRepository.findById(id), id, "user");
         user.setUsername(userDetails.getUsername());
-        user.setPassword(user.getPassword());
+        user.setPassword(userDetails.getPassword());
         userRepository.save(user);
     }
 

@@ -8,6 +8,7 @@ import com.lkochan.tournamentapp.enums.UserRole;
 public interface UserService {
     List<User> getUsers();
     User getUser(Long id);
+    User getUser(String username);
     void saveUser(User user);
     void deleteUser(Long id);
     void updateUserCredentials(Long id, User user);
